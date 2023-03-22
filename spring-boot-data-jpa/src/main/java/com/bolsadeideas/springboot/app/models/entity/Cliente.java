@@ -31,6 +31,7 @@ public class Cliente implements Serializable {
     @NotNull(message = "La fecha no puede estar vacía")
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date createAt;
+    private String foto;
 
     public Long getId() {
         return id;
@@ -72,4 +73,11 @@ public class Cliente implements Serializable {
         this.createAt = createAt;
     }
 
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
+    }
 }
