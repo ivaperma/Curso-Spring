@@ -7,7 +7,9 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "clientes")
@@ -31,7 +33,14 @@ public class Cliente implements Serializable {
     @NotNull(message = "La fecha no puede estar vacía")
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date createAt;
+
+    @OneToMany(mappedBy = "cliente",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Factura> facturas;
     private String foto;
+
+    public Cliente() {
+        facturas = new ArrayList<Factura>();
+    }
 
     public Long getId() {
         return id;
@@ -79,5 +88,16 @@ public class Cliente implements Serializable {
 
     public void setFoto(String foto) {
         this.foto = foto;
+    }
+
+    public List<Factura> getFacturas() {
+        return facturas;
+    }
+
+    public void setFacturas(List<Factura> facturas) {
+        this.facturas = facturas;
+    }
+    public void addFactura(Factura factura){
+        facturas.add(factura);
     }
 }
