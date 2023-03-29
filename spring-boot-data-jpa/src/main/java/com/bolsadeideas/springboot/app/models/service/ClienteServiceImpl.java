@@ -93,7 +93,7 @@ public class ClienteServiceImpl implements IClienteService {
 
     @Override
     @Transactional(readOnly = true)
-    public Factura fetchFacturaByIdWithClienteWhitItemFacturaWithProducto(Long id) {
+    public Factura fetchFacturaByIdWithClienteWithtItemFacturaWithProducto(Long id) {
         return facturaDao.fetchByIdWithClienteWhitItemFacturaWithProducto(id);
     }
 }

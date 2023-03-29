@@ -7,6 +7,7 @@ import com.bolsadeideas.springboot.app.models.entity.Producto;
 import com.bolsadeideas.springboot.app.models.service.IClienteService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 import java.util.Map;
 
+@Secured("ROLE_ADMIN")
 @Controller
 @RequestMapping("/factura")
 @SessionAttributes("factura")
@@ -29,7 +31,7 @@ public class FacturaController {
     public String ver(@PathVariable(value = "id") Long id,
                       Model model,
                       RedirectAttributes flash) {
-        Factura factura = clienteService.fetchFacturaByIdWithClienteWhitItemFacturaWithProducto(id); //clienteService.findFacturaById(id);
+        Factura factura = clienteService.fetchFacturaByIdWithClienteWithtItemFacturaWithProducto(id); //clienteService.findFacturaById(id);
 
         if (factura == null) {
             flash.addFlashAttribute("error", "La factura no existe en la BBDD");
