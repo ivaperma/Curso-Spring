@@ -1,66 +1,97 @@
 package com.bolsadeideas.springboot.app;
 
-import com.bolsadeideas.springboot.app.auth.handler.LoginSuccessHandler;
+import com.bolsadeideas.springboot.app.models.service.JpaUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-@EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
+import javax.sql.DataSource;
+
+import com.bolsadeideas.springboot.app.auth.handler.LoginSuccessHandler;
+
 @Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
 public class SpringSecurityConfig {
 
     @Autowired
     private LoginSuccessHandler successHandler;
 
-    @Bean
-    public static BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JpaUserDetailsService userDetailService;
+
+/*    @Autowired
+    private DataSource dataSource;*/
+
+    @Autowired
+    public void userDetailsService(AuthenticationManagerBuilder build) throws Exception {
+        build.userDetailsService(userDetailService)
+                .passwordEncoder(passwordEncoder);
     }
 
     @Bean
-    public UserDetailsService userDetailsService() throws Exception {
-
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-
-        manager.createUser(User.withUsername("user")
-                .password(passwordEncoder().encode("user"))
-                .roles("USER").build());
-
-        manager.createUser(User.withUsername("admin")
-                .password(passwordEncoder().encode("admin"))
-                .roles("ADMIN", "USER").build());
-
-        return manager;
-    }
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        http.authorizeHttpRequests()
-/*                .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/listar").permitAll()
-                .requestMatchers("/ver/**").hasAnyRole("USER")
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+//                .csrf().disable()
+                .authorizeHttpRequests()
+                .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/listar")
+                .permitAll()
+                /*.requestMatchers("/ver/**").hasAnyRole("USER")
                 .requestMatchers("/uploads/**").hasAnyRole("USER")
                 .requestMatchers("/form/**").hasAnyRole("ADMIN")
-                .requestMatchers("/eliminar/**").hasAnyRole("ADMIN")
+                .requestMatchers("/delete/**").hasAnyRole("ADMIN")
                 .requestMatchers("/factura/**").hasAnyRole("ADMIN")*/
                 .anyRequest().authenticated()
                 .and()
-                .formLogin().successHandler(successHandler)
+                .formLogin()
+                .successHandler(successHandler)
                 .loginPage("/login")
                 .permitAll()
                 .and()
                 .logout().permitAll()
                 .and()
-                .exceptionHandling().accessDeniedPage("/error_403");
-
-        return http.build();
+                .exceptionHandling().accessDeniedPage("/error_404")
+                .and().build();
     }
 
+    /*
+    //pruebas en memoria
+    @Bean
+    UserDetailsService userDetailsService() {
+        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+        manager.createUser(
+                User
+                        .withUsername("admin")
+                        .password(passwordEncoder.encode("admin"))
+                        .roles("USER","ADMIN")
+                        .build());
+        manager.createUser(
+                User
+                        .withUsername("user")
+                        .password(passwordEncoder.encode("user"))
+                        .roles("USER")
+                        .build());
+        return manager;
+    }*/
+/*    @Bean
+    AuthenticationManager authManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
+                //.userDetailsService(userDetailsService())
+                .jdbcAuthentication()
+                .dataSource(dataSource)
+                .passwordEncoder(passwordEncoder)
+                .usersByUsernameQuery("select username, password, enable from users where username=?")
+                .authoritiesByUsernameQuery("select u.username, a.authority from authorities a inner join users u on (a.user_id=u.id) where u.username=?")
+                .and().build();
+    }*/
 }
