@@ -22,7 +22,7 @@
                 <li class="nav-item"><a class="nav-link" th:href="@{/listar}"
                                         th:text="#{text.menu.customer}">Customer</a></li>
             </ul>
-            <ul class="navbar-nav navbar-right">
+            <ul class="navbar-nav">
                 <li sec:authorize="!isAuthenticated()"><a
                         class="btn btn-outline-primary" th:href="@{/login}" th:text="#{text.menu.signin}">Sign In</a>
                 </li>
