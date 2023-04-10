@@ -1,5 +1,8 @@
 package com.bolsadeideas.springboot.app.models.entity;
 
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -32,9 +35,11 @@ public class Cliente implements Serializable {
     @Temporal(TemporalType.DATE)
     @NotNull(message = "La fecha no puede estar vacía")
     @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createAt;
 
     @OneToMany(mappedBy = "cliente",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Factura> facturas;
     private String foto;
 

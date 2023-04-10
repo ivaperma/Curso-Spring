@@ -1,5 +1,6 @@
 package com.bolsadeideas.springboot.app.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.xml.bind.annotation.XmlTransient;
@@ -25,6 +26,7 @@ public class Factura implements Serializable {
     @Column(name = "create_at")
     private Date createAt;
     @ManyToOne()
+    @JsonBackReference
     private Cliente cliente;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

@@ -1,5 +1,6 @@
 package com.bolsadeideas.springboot.app.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -14,7 +15,7 @@ public class ItemFactura implements Serializable {
     private Long id;
     private Integer cantidad;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "producto_id")
     private Producto producto;
 
