@@ -5,6 +5,7 @@ import com.bolsadeideas.springboot.app.models.service.IClienteService;
 import com.bolsadeideas.springboot.app.models.service.IUploadFileService;
 import com.bolsadeideas.springboot.app.util.paginator.PageRender;
 
+import com.bolsadeideas.springboot.app.view.xml.ClienteList;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.apache.commons.logging.Log;
@@ -37,6 +38,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -88,21 +90,29 @@ public class ClienteController {
         return "ver";
     }
 
-    @Secured("ROLE_USER")
-    @RequestMapping(value = {"/listar", "/"}, method = RequestMethod.GET)
-    public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model, Authentication authentication, HttpServletRequest request, Locale locale) {
 
-        if(authentication != null) {
+    @GetMapping(value = "/listar-rest")
+    public @ResponseBody ClienteList listarRest() {
+
+        return new ClienteList(clienteService.findAll());
+    }
+
+
+    @RequestMapping(value = {"/listar", "/"}, method = RequestMethod.GET)
+    public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model, Authentication
+            authentication, HttpServletRequest request, Locale locale) {
+
+        if (authentication != null) {
             logger.info("Hola usuario autenticado, tu username es: ".concat(authentication.getName()));
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if(auth != null) {
+        if (auth != null) {
             logger.info("Utilizando forma estática SecurityContextHolder.getContext().getAuthentication(): Usuario autenticado: ".concat(auth.getName()));
         }
 
-        if(hasRole("ROLE_ADMIN")) {
+        if (hasRole("ROLE_ADMIN")) {
             logger.info("Hola ".concat(auth.getName()).concat(" tienes acceso!"));
         } else {
             logger.info("Hola ".concat(auth.getName()).concat(" NO tienes acceso!"));
@@ -110,13 +120,13 @@ public class ClienteController {
 
         SecurityContextHolderAwareRequestWrapper securityContext = new SecurityContextHolderAwareRequestWrapper(request, "");
 
-        if(securityContext.isUserInRole("ROLE_ADMIN")) {
+        if (securityContext.isUserInRole("ROLE_ADMIN")) {
             logger.info("Forma usando SecurityContextHolderAwareRequestWrapper: Hola ".concat(auth.getName()).concat(" tienes acceso!"));
         } else {
             logger.info("Forma usando SecurityContextHolderAwareRequestWrapper: Hola ".concat(auth.getName()).concat(" NO tienes acceso!"));
         }
 
-        if(request.isUserInRole("ROLE_ADMIN")) {
+        if (request.isUserInRole("ROLE_ADMIN")) {
             logger.info("Forma usando HttpServletRequest: Hola ".concat(auth.getName()).concat(" tienes acceso!"));
         } else {
             logger.info("Forma usando HttpServletRequest: Hola ".concat(auth.getName()).concat(" NO tienes acceso!"));
@@ -145,7 +155,8 @@ public class ClienteController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "/form/{id}")
-    public String editar(@PathVariable(value = "id") Long id, Map<String, Object> model, RedirectAttributes flash, Locale locale) {
+    public String editar(@PathVariable(value = "id") Long id, Map<String, Object> model, RedirectAttributes
+            flash, Locale locale) {
 
         Cliente cliente = null;
 
