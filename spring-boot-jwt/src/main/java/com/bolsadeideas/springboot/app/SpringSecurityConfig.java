@@ -1,6 +1,8 @@
 package com.bolsadeideas.springboot.app;
 
 import com.bolsadeideas.springboot.app.auth.filter.JWTAuthenticationFilter;
+import com.bolsadeideas.springboot.app.auth.filter.JWTAuthorizationFilter;
+import com.bolsadeideas.springboot.app.auth.service.JWTService;
 import com.bolsadeideas.springboot.app.models.service.JpaUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +32,8 @@ public class SpringSecurityConfig {
 
     @Autowired
     private AuthenticationConfiguration authenticationConfiguration;
+    @Autowired
+    private JWTService jwtService;
 
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
@@ -49,7 +53,8 @@ public class SpringSecurityConfig {
                 .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/listar**","/locale").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(new JWTAuthenticationFilter(authenticationConfiguration.getAuthenticationManager()))
+                .addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtService))
+                .addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtService))
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         return http.build();
