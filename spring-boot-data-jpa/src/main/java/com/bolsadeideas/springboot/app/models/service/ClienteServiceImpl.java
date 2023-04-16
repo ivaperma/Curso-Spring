@@ -17,7 +17,7 @@ import java.util.List;
 @Service
 public class ClienteServiceImpl implements IClienteService {
 
-    @Autowired
+    @Autowired(required = true)
     private IClienteDao clienteDao;
     @Autowired
     private IProductoDao productoDao;
